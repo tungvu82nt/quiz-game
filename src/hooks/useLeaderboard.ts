@@ -191,8 +191,8 @@ export function useLeaderboard() {
       console.error('Failed to add to leaderboard via API:', err)
       // Fallback: lưu vào localStorage và state
       const next = [...readBoardLocal(), item]
-      next.sort((a, b) => b.score - a.score)
-      setBoard(next.slice(0, 50))
+    next.sort((a, b) => b.score - a.score)
+    setBoard(next.slice(0, 50))
       saveBoardLocal(next)
       const errorMessage =
         err instanceof Error ? err.message : 'Không thể lưu lên server. Đã lưu vào bộ nhớ local.'

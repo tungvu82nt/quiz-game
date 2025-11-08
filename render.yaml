@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: quiz-api
+    env: node
+    plan: free
+    buildCommand: npm install && npm run db:migrate
+    startCommand: npm run server
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        sync: false
+      - key: ALLOWED_ORIGINS
+        value: https://leafy-sunflower-6cf24d.netlify.app
+

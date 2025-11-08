@@ -12,8 +12,16 @@
     "preview": "vite preview",
     "test": "vitest --environment jsdom",
     "server": "tsx server/index.ts",
+    "start": "npm run server",
     "db:migrate": "tsx server/migrate.ts",
-    "db:check": "tsx server/check-db.ts"
+    "db:check": "tsx server/check-db.ts",
+    "test:api": "node scripts/test-api.js",
+    "test:railway": "node scripts/test-railway.js",
+    "test:netlify": "node scripts/test-netlify.js",
+    "setup:netlify": "node scripts/setup-netlify-env.js",
+    "check:deployment": "node scripts/check-deployment.js",
+    "deploy:guide": "node scripts/deploy-backend.js",
+    "postinstall": "npm run db:migrate || true"
   },
   "dependencies": {
     "cors": "^2.8.5",

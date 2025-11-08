@@ -1,0 +1,15 @@
+# Nixpacks configuration for Railway
+# This ensures Railway only builds and runs the backend API server
+
+[phases.setup]
+nixPkgs = ["nodejs-18_x"]
+
+[phases.install]
+cmds = ["npm install"]
+
+[phases.build]
+cmds = ["npm run db:migrate || true"]
+
+[start]
+cmd = "npm run server"
+

@@ -5,7 +5,8 @@ import type { LeaderboardItem } from '../src/hooks/useLeaderboard.js'
 import { ipTrackingMiddleware, getClientIp } from './middleware/ipTracking.js'
 
 const app = express()
-const PORT = process.env.PORT || 3001
+// PORT: Railway/Fly.io có thể set PORT, Render dùng 10000 mặc định
+const PORT = process.env.PORT || 3002
 
 // Middleware
 // CORS: Cho phép tất cả origins (có thể tùy chỉnh cho production)
@@ -191,8 +192,9 @@ app.get('/api/tracking/stats', async (req, res) => {
 })
 
 // Khởi động server với error handling
-const server = app.listen(PORT, () => {
-  console.log(`🚀 API server running on http://localhost:${PORT}`)
+const server = app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 API server running on http://0.0.0.0:${PORT}`)
+  console.log(`📡 Accessible at: http://localhost:${PORT}`)
 })
 
 // Xử lý lỗi khi port đã được sử dụng
