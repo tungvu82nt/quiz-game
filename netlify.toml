@@ -1,18 +1,17 @@
+# Netlify Build Configuration
+# Disable auto-install of extensions
+
 [build]
   command = "npm run build"
   publish = "dist"
 
 [build.environment]
   NODE_VERSION = "18"
-
-# Tắt auto-install extensions để tránh lỗi neon extension
-[build.processing]
-  skip_processing = false
+  # Disable auto-install extensions
+  NETLIFY_PLUGINS_AUTO_INSTALL = "false"
 
 # Redirects cho SPA routing
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-
-
