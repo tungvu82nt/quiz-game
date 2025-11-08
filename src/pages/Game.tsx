@@ -10,12 +10,11 @@ import { useLeaderboard } from '../hooks/useLeaderboard'
 import { useBeep } from '../hooks/useAudio'
 import { analyzePersonality } from '../services/analysis'
 
-// Import markdown ở thư mục cha
-// Path từ src -> ../../quiz-tam-ly-vui-nhon.md
-// Vite đã được cấu hình fs.allow để cho phép truy cập
+// Import markdown từ root của repo
+// Path từ src/pages/Game.tsx -> ../../quiz-tam-ly-vui-nhon.md
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import quizMd from '../../../quiz-tam-ly-vui-nhon.md?raw'
+import quizMd from '../../quiz-tam-ly-vui-nhon.md?raw'
 
 export default function Game() {
   const navigate = useNavigate()
