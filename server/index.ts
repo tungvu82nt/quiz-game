@@ -172,8 +172,25 @@ app.get('/api/tracking/stats', async (req, res) => {
   }
 })
 
-// Khởi động server
-app.listen(PORT, () => {
+// Khởi động server với error handling
+const server = app.listen(PORT, () => {
   console.log(`🚀 API server running on http://localhost:${PORT}`)
+})
+
+// Xử lý lỗi khi port đã được sử dụng
+server.on('error', (err: NodeJS.ErrnoException) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`❌ Port ${PORT} is already in use`)
+    console.error(`💡 Solutions:`)
+    console.error(`   1. Stop the process using port ${PORT}`)
+    console.error(`   2. Or change PORT in .env file to another port (e.g., 3002, 3003)`)
+    console.error(`   3. Or kill the process: Get-Process -Id <PID> | Stop-Process`)
+    console.error(`\n📋 Process using port ${PORT}:`)
+    console.error(`   Run: netstat -ano | findstr ":${PORT}"`)
+    process.exit(1)
+  } else {
+    console.error('❌ Server error:', err)
+    process.exit(1)
+  }
 })
 
