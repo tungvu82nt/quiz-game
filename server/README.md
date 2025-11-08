@@ -98,9 +98,46 @@ Health check endpoint.
 }
 ```
 
+### GET /api/tracking
+Lấy dữ liệu tracking (GPS và IP). Có thể dùng query parameter `limit` để giới hạn số lượng kết quả (mặc định: 100).
+
+**Query Parameters:**
+- `limit` (optional): Số lượng records tối đa (default: 100)
+
+**Response:**
+```json
+[
+  {
+    "id": 1,
+    "leaderboardId": 1,
+    "ipAddress": "::1",
+    "latitude": 10.754596,
+    "longitude": 106.667526,
+    "accuracy": 17,
+    "timestamp": 1234567890000,
+    "userName": "Test User",
+    "score": 10
+  }
+]
+```
+
+### GET /api/tracking/stats
+Thống kê tracking data.
+
+**Response:**
+```json
+{
+  "totalRecords": 10,
+  "uniqueIPs": 5,
+  "gpsRecords": 8,
+  "firstRecord": "2025-01-08T10:00:00.000Z",
+  "lastRecord": "2025-01-08T12:00:00.000Z"
+}
+```
+
 ## Database Schema
 
-Bảng `leaderboard`:
+### Bảng `leaderboard`:
 - `id`: SERIAL PRIMARY KEY
 - `name`: VARCHAR(255) NOT NULL
 - `score`: INTEGER NOT NULL
@@ -109,8 +146,35 @@ Bảng `leaderboard`:
 - `analysis_summary`: TEXT
 - `created_at`: TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 
-Indexes:
+**Indexes:**
 - `idx_leaderboard_score`: trên `score DESC`
 - `idx_leaderboard_created_at`: trên `created_at DESC`
 - `idx_leaderboard_score_created`: composite trên `score DESC, created_at DESC`
+
+### Bảng `quiz_tracking`:
+- `id`: SERIAL PRIMARY KEY
+- `leaderboard_id`: INTEGER REFERENCES leaderboard(id) ON DELETE CASCADE
+- `ip_address`: VARCHAR(45) NOT NULL
+- `latitude`: DOUBLE PRECISION
+- `longitude`: DOUBLE PRECISION
+- `accuracy`: DOUBLE PRECISION
+- `created_at`: TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+
+**Indexes:**
+- `idx_quiz_tracking_ip_address`: trên `ip_address`
+- `idx_quiz_tracking_created_at`: trên `created_at DESC`
+- `idx_quiz_tracking_leaderboard_id`: trên `leaderboard_id`
+
+## Scripts
+
+### Kiểm tra database:
+```bash
+npm run db:check
+```
+
+Script này sẽ hiển thị:
+- Số lượng records trong mỗi bảng
+- Latest tracking records với GPS và IP
+- Thống kê (total records, unique IPs, GPS records)
+- Top IPs
 

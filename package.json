@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "test": "vitest --environment jsdom",
     "server": "tsx server/index.ts",
-    "db:migrate": "tsx server/migrate.ts"
+    "db:migrate": "tsx server/migrate.ts",
+    "db:check": "tsx server/check-db.ts"
   },
   "dependencies": {
     "cors": "^2.8.5",

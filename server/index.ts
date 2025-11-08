@@ -104,6 +104,74 @@ app.post('/api/leaderboard', async (req, res) => {
   }
 })
 
+// GET /api/tracking - Lấy dữ liệu tracking (GPS và IP)
+app.get('/api/tracking', async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit as string) || 100
+    const result = await query(
+      `SELECT 
+        qt.id,
+        qt.leaderboard_id,
+        qt.ip_address,
+        qt.latitude,
+        qt.longitude,
+        qt.accuracy,
+        EXTRACT(EPOCH FROM qt.created_at) * 1000 as timestamp,
+        l.name,
+        l.score
+       FROM quiz_tracking qt
+       LEFT JOIN leaderboard l ON qt.leaderboard_id = l.id
+       ORDER BY qt.created_at DESC
+       LIMIT $1`,
+      [limit]
+    )
+
+    const trackingData = result.rows.map((row) => ({
+      id: row.id,
+      leaderboardId: row.leaderboard_id,
+      ipAddress: row.ip_address,
+      latitude: row.latitude,
+      longitude: row.longitude,
+      accuracy: row.accuracy,
+      timestamp: parseInt(row.timestamp),
+      userName: row.name,
+      score: row.score,
+    }))
+
+    res.json(trackingData)
+  } catch (error) {
+    console.error('Error fetching tracking data:', error)
+    res.status(500).json({ error: 'Failed to fetch tracking data' })
+  }
+})
+
+// GET /api/tracking/stats - Thống kê tracking
+app.get('/api/tracking/stats', async (req, res) => {
+  try {
+    const stats = await query(
+      `SELECT 
+        COUNT(*) as total_records,
+        COUNT(DISTINCT ip_address) as unique_ips,
+        COUNT(latitude) as gps_records,
+        MIN(created_at) as first_record,
+        MAX(created_at) as last_record
+       FROM quiz_tracking`
+    )
+
+    const result = stats.rows[0]
+    res.json({
+      totalRecords: parseInt(result.total_records),
+      uniqueIPs: parseInt(result.unique_ips),
+      gpsRecords: parseInt(result.gps_records),
+      firstRecord: result.first_record,
+      lastRecord: result.last_record,
+    })
+  } catch (error) {
+    console.error('Error fetching tracking stats:', error)
+    res.status(500).json({ error: 'Failed to fetch tracking stats' })
+  }
+})
+
 // Khởi động server
 app.listen(PORT, () => {
   console.log(`🚀 API server running on http://localhost:${PORT}`)
