@@ -85,7 +85,9 @@ export async function analyzePersonality(payload: AnalyzePayload): Promise<Analy
       try {
         const obj = JSON.parse(text)
         if (obj && typeof obj === 'object') return obj
-      } catch {}
+      } catch {
+        // Invalid JSON, return null
+      }
       return null
     }
 

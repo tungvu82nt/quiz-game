@@ -5,6 +5,11 @@ import path from 'path'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
   server: {
     // Cho phép đọc file markdown ở thư mục cha: d:\IP\111\quiz-tam-ly-vui-nhon.md
     fs: {

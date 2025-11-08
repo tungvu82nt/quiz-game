@@ -5,6 +5,8 @@ import { parseQuizMarkdown } from '../utils/markdownParser'
 import QuestionMCQ from '../components/QuestionMCQ'
 import ProgressBar from '../components/ProgressBar'
 import { scoreFromMCQ, summarizeScore } from '../game/score'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 
 import { useLeaderboard } from '../hooks/useLeaderboard'
 import { useBeep } from '../hooks/useAudio'
@@ -65,17 +67,19 @@ export default function Game() {
   const isLast = index === questions.length - 1
 
   return (
-    <div className="container">
-      <div className="intro">
-        <h1>Trắc nghiệm tâm lý vui nhộn</h1>
-        <p>Chọn đáp án tự nhiên nhất — giao diện game-based, mỗi câu có hiệu ứng tương tác. Hãy cùng khám phá bản thân!</p>
-        <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginTop: 8 }}>
-          <input
+    <div className="container max-w-4xl mx-auto px-6 py-8">
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold mb-3">Trắc nghiệm tâm lý vui nhộn</h1>
+        <p className="text-lg text-muted-foreground mb-4">
+          Chọn đáp án tự nhiên nhất — giao diện game-based, mỗi câu có hiệu ứng tương tác. Hãy cùng khám phá bản thân!
+        </p>
+        <div className="flex gap-2 justify-center mt-4 flex-wrap">
+          <Input
             type="text"
             placeholder="Tên hiển thị (tuỳ chọn)"
             value={playerName}
             onChange={(e) => setPlayerName(e.target.value)}
-            style={{ padding: 8, borderRadius: 8, border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.06)', color: 'inherit', minWidth: 240 }}
+            className="min-w-[240px] max-w-sm"
           />
         </div>
       </div>
@@ -83,15 +87,32 @@ export default function Game() {
       <ProgressBar current={index + 1} total={questions.length} />
 
       {current.kind === 'mcq' && (
-        <QuestionMCQ question={current} onAnswer={(key) => onAnswerMCQ(current.id, key)} />
+        <QuestionMCQ 
+          key={current.id} 
+          question={current} 
+          onAnswer={(key) => onAnswerMCQ(current.id, key)} 
+        />
       )}
 
-      <div className="actions">
+      <div className="flex gap-3 justify-center mt-8 flex-wrap">
         {!isLast && (
-          <button onClick={onNext}>Bỏ qua</button>
+          <Button 
+            variant="outline" 
+            onClick={onNext}
+            className="transition-all duration-200 hover:scale-105 active:scale-95"
+          >
+            Bỏ qua
+          </Button>
         )}
         {isLast && (
-          <button className="primary" onClick={finish} disabled={loading}>{loading ? 'Đang phân tích...' : 'Xem kết quả'}</button>
+          <Button 
+            variant="default" 
+            onClick={finish} 
+            disabled={loading}
+            className="min-w-[160px] transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+          >
+            {loading ? 'Đang phân tích...' : 'Xem kết quả'}
+          </Button>
         )}
       </div>
     </div>

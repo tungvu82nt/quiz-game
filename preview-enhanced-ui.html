@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PSY-QUIZ - Enhanced UI Preview</title>
+  <style>
+    /* ============================================
+       ENHANCED DESIGN SYSTEM
+       ============================================ */
+    :root {
+      /* Color System */
+      --primary-50: #f0fdf4;
+      --primary-100: #dcfce7;
+      --primary-500: #22c55e;
+      --primary-600: #16a34a;
+      --primary-700: #15803d;
+      --primary: #34d399;
+      --primary-2: #10b981;
+      
+      /* Semantic Colors */
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --info: #3b82f6;
+      
+      /* Neutral */
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-900: #111827;
+      
+      /* Background */
+      --bg: radial-gradient(1000px 500px at 10% 10%, #ecfdf5 0%, transparent 60%),
+           radial-gradient(1000px 500px at 90% 90%, #f0fdf4 0%, transparent 60%),
+           linear-gradient(180deg, #f7fcf9 0%, #eef9f3 100%);
+      --card-bg: rgba(255, 255, 255, 0.95);
+      --border: rgba(16, 185, 129, 0.25);
+      --text: #0b1f17;
+      
+      /* Shadows */
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      
+      /* Focus */
+      --focus-ring: 0 0 0 3px rgba(34, 197, 94, 0.5);
+      
+      /* Typography */
+      --font-display: 'Inter', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      --text-base: 1rem;
+      --text-lg: 1.125rem;
+      --text-xl: 1.25rem;
+      --text-2xl: 1.5rem;
+      --text-3xl: 1.875rem;
+      
+      --font-weight-normal: 400;
+      --font-weight-medium: 500;
+      --font-weight-semibold: 600;
+      --font-weight-bold: 700;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      min-height: 100vh;
+      font-family: var(--font-display);
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+    }
+
+    /* ============================================
+       LAYOUT
+       ============================================ */
+    .app-root {
+      max-width: 960px;
+      margin: 0 auto;
+      min-height: 100vh;
+    }
+
+    /* ============================================
+       NAVIGATION / TOPBAR
+       ============================================ */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.8);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .brand {
+      font-weight: var(--font-weight-bold);
+      font-size: var(--text-xl);
+      letter-spacing: 0.5px;
+      color: var(--text);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .brand:hover {
+      color: var(--primary-600);
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .nav-actions a {
+      color: var(--primary-2);
+      text-decoration: none;
+      font-weight: var(--font-weight-medium);
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .nav-actions a:hover {
+      background: var(--primary-50);
+      color: var(--primary-700);
+    }
+
+    .nav-actions a:focus-visible {
+      outline: 2px solid var(--primary-600);
+      outline-offset: 2px;
+    }
+
+    /* ============================================
+       CONTAINER & INTRO
+       ============================================ */
+    .container {
+      padding: 32px 24px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .intro {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .intro h1 {
+      font-size: var(--text-3xl);
+      font-weight: var(--font-weight-bold);
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+
+    .intro p {
+      font-size: var(--text-lg);
+      color: var(--text);
+      opacity: 0.8;
+      margin-bottom: 16px;
+    }
+
+    /* ============================================
+       CARDS
+       ============================================ */
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: var(--shadow-md);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-bottom: 24px;
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+    }
+
+    .quiz-card {
+      padding: 32px;
+    }
+
+    .quiz-card .prompt {
+      font-size: var(--text-xl);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: 24px;
+      line-height: 1.5;
+      color: var(--text);
+    }
+
+    /* ============================================
+       PROGRESS BAR (Enhanced)
+       ============================================ */
+    .progress {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 24px 0;
+      padding: 0 4px;
+    }
+
+    .progress-track {
+      flex: 1;
+      height: 12px;
+      background: var(--gray-100);
+      border-radius: 999px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+    }
+
+    .progress-thumb {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--primary-2));
+      border-radius: 999px;
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-thumb::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+      );
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .progress-label {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text);
+      min-width: 60px;
+      text-align: right;
+    }
+
+    /* ============================================
+       QUESTION OPTIONS (Enhanced)
+       ============================================ */
+    .options {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1fr;
+    }
+
+    .option {
+      text-align: left;
+      padding: 16px 20px;
+      border-radius: 12px;
+      background: #ffffff;
+      border: 2px solid var(--border);
+      color: var(--text);
+      cursor: pointer;
+      font-size: var(--text-base);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+    }
+
+    .option::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(34, 197, 94, 0.1);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .option:hover {
+      background: var(--primary-50);
+      border-color: var(--primary-600);
+      transform: translateX(4px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .option:active {
+      transform: scale(0.98);
+    }
+
+    .option.selected {
+      background: var(--primary-50);
+      border-color: var(--primary-600);
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+    }
+
+    .option.selected::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .option:focus-visible {
+      outline: none;
+      border-color: var(--primary-600);
+      box-shadow: var(--focus-ring);
+    }
+
+    .opt-key {
+      font-weight: var(--font-weight-bold);
+      color: var(--primary-600);
+      margin-right: 12px;
+      font-size: var(--text-lg);
+      min-width: 24px;
+    }
+
+    /* ============================================
+       BUTTONS (Enhanced)
+       ============================================ */
+    .actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 32px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border-radius: 12px;
+      border: 2px solid var(--border);
+      padding: 12px 24px;
+      background: #ffffff;
+      color: var(--text);
+      cursor: pointer;
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      font-family: inherit;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      min-height: 44px;
+      min-width: 120px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    button:active::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    button:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+    }
+
+    button.primary {
+      background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+      color: white;
+      font-weight: var(--font-weight-bold);
+      border-color: var(--primary-700);
+      box-shadow: var(--shadow-md);
+    }
+
+    button.primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+      background: linear-gradient(135deg, var(--primary-700), var(--primary-600));
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    button.secondary {
+      background: white;
+      border-color: var(--primary-600);
+      color: var(--primary-700);
+    }
+
+    button.secondary:hover:not(:disabled) {
+      background: var(--primary-50);
+    }
+
+    /* ============================================
+       INPUT FIELDS (Enhanced)
+       ============================================ */
+    input[type="text"] {
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 2px solid var(--border);
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--text);
+      font-size: var(--text-base);
+      font-family: inherit;
+      min-width: 240px;
+      min-height: 44px;
+      transition: all 0.2s;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--primary-600);
+      box-shadow: var(--focus-ring);
+      background: white;
+    }
+
+    input[type="text"]::placeholder {
+      color: var(--text);
+      opacity: 0.5;
+    }
+
+    /* ============================================
+       ANALYSIS CARDS
+       ============================================ */
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .analysis-card {
+      background: var(--gray-50);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.2s;
+    }
+
+    .analysis-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .analysis-label {
+      font-weight: var(--font-weight-bold);
+      margin-bottom: 12px;
+      color: var(--primary-600);
+      font-size: var(--text-lg);
+    }
+
+    .analysis-text {
+      line-height: 1.7;
+      color: var(--text);
+      font-size: var(--text-base);
+    }
+
+    .analysis-disclaimer {
+      margin-top: 16px;
+      opacity: 0.7;
+      font-size: var(--text-base);
+      color: var(--text);
+      font-style: italic;
+    }
+
+    /* ============================================
+       LINKS
+       ============================================ */
+    .link {
+      color: var(--primary-600);
+      text-decoration: none;
+      font-weight: var(--font-weight-medium);
+      padding: 12px 16px;
+      border-radius: 8px;
+      transition: all 0.2s;
+      display: inline-block;
+    }
+
+    .link:hover {
+      background: var(--primary-50);
+      color: var(--primary-700);
+    }
+
+    .link:focus-visible {
+      outline: 2px solid var(--primary-600);
+      outline-offset: 2px;
+    }
+
+    /* ============================================
+       LOADING SKELETON
+       ============================================ */
+    .skeleton {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+      border-radius: 8px;
+    }
+
+    @keyframes loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .skeleton-title {
+      height: 32px;
+      margin-bottom: 16px;
+    }
+
+    .skeleton-option {
+      height: 56px;
+      margin-bottom: 12px;
+    }
+
+    /* ============================================
+       SKIP LINK (Accessibility)
+       ============================================ */
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--primary-600);
+      color: white;
+      padding: 12px 20px;
+      text-decoration: none;
+      border-radius: 0 0 8px 0;
+      z-index: 1000;
+      font-weight: var(--font-weight-bold);
+    }
+
+    .skip-link:focus {
+      top: 0;
+    }
+
+    /* ============================================
+       SCREEN READER ONLY
+       ============================================ */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+
+    /* ============================================
+       PAGE TABS (Demo Navigation)
+       ============================================ */
+    .page-tabs {
+      display: flex;
+      gap: 8px;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    .page-tab {
+      padding: 8px 16px;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      border-radius: 8px;
+      font-weight: var(--font-weight-medium);
+      transition: all 0.2s;
+    }
+
+    .page-tab:hover {
+      background: var(--primary-50);
+    }
+
+    .page-tab.active {
+      background: var(--primary-600);
+      color: white;
+    }
+
+    .page-content {
+      display: none;
+    }
+
+    .page-content.active {
+      display: block;
+    }
+
+    /* ============================================
+       MOBILE RESPONSIVE
+       ============================================ */
+    @media (max-width: 640px) {
+      .container {
+        padding: 24px 16px;
+      }
+
+      .topbar {
+        padding: 12px 16px;
+      }
+
+      .brand {
+        font-size: var(--text-lg);
+      }
+
+      .intro h1 {
+        font-size: var(--text-2xl);
+      }
+
+      .quiz-card {
+        padding: 20px;
+      }
+
+      .quiz-card .prompt {
+        font-size: var(--text-lg);
+      }
+
+      .option {
+        padding: 14px 16px;
+        font-size: var(--text-base);
+      }
+
+      .actions {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 16px;
+        background: white;
+        border-top: 1px solid var(--border);
+        box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 10;
+        margin: 0;
+      }
+
+      .container {
+        padding-bottom: 100px;
+      }
+
+      .analysis-grid {
+        grid-template-columns: 1fr;
+      }
+
+      input[type="text"] {
+        min-width: 100%;
+        font-size: 16px; /* Prevent zoom on iOS */
+      }
+    }
+
+    /* ============================================
+       ANIMATIONS
+       ============================================ */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card {
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    /* ============================================
+       UTILITY CLASSES
+       ============================================ */
+    .text-center {
+      text-align: center;
+    }
+
+    .mt-16 {
+      margin-top: 16px;
+    }
+
+    .mb-16 {
+      margin-bottom: 16px;
+    }
+
+    .error-message {
+      padding: 16px;
+      background: #fee2e2;
+      border: 1px solid var(--error);
+      border-radius: 8px;
+      color: #991b1b;
+      margin-bottom: 16px;
+    }
+
+    .success-message {
+      padding: 16px;
+      background: #d1fae5;
+      border: 1px solid var(--success);
+      border-radius: 8px;
+      color: #065f46;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Bỏ qua đến nội dung chính</a>
+
+  <div class="app-root">
+    <!-- Navigation -->
+    <nav class="topbar" role="navigation" aria-label="Main navigation">
+      <a href="#" class="brand" aria-label="PSY-QUIZ Home">PSY-QUIZ</a>
+      <div class="nav-actions">
+      </div>
+    </nav>
+
+    <!-- Page Tabs for Demo -->
+    <div class="page-tabs" role="tablist">
+      <button class="page-tab active" onclick="showPage('game')" role="tab" aria-selected="true">Game</button>
+      <button class="page-tab" onclick="showPage('result')" role="tab" aria-selected="false">Result</button>
+    </div>
+
+    <!-- GAME PAGE -->
+    <main id="main-content" class="page-content active" role="main">
+      <div class="container">
+        <div class="intro">
+          <h1>Trắc nghiệm tâm lý vui nhộn</h1>
+          <p>Chọn đáp án tự nhiên nhất — giao diện game-based, mỗi câu có hiệu ứng tương tác. Hãy cùng khám phá bản thân!</p>
+          <div style="display: flex; gap: 8px; justify-content: center; margin-top: 16px; flex-wrap: wrap;">
+            <input
+              type="text"
+              placeholder="Tên hiển thị (tuỳ chọn)"
+              aria-label="Nhập tên hiển thị"
+              style="padding: 12px 16px; border-radius: 10px; border: 2px solid var(--border); background: rgba(255,255,255,0.9); color: var(--text); min-width: 240px; font-size: 16px;"
+            />
+          </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress" role="progressbar" aria-valuenow="3" aria-valuemin="1" aria-valuemax="10" aria-label="Câu hỏi 3 trên 10">
+          <div class="progress-track">
+            <div class="progress-thumb" style="width: 30%;"></div>
+          </div>
+          <div class="progress-label">3/10</div>
+        </div>
+
+        <!-- Question Card -->
+        <div class="card quiz-card">
+          <h2 class="prompt">Bạn thích làm gì vào cuối tuần?</h2>
+          <div class="options" role="radiogroup" aria-label="Chọn đáp án">
+            <button class="option" role="radio" aria-checked="false" tabindex="0" onclick="selectOption(this)">
+              <span class="opt-key">A)</span>
+              <span>Ở nhà đọc sách, xem phim</span>
+            </button>
+            <button class="option" role="radio" aria-checked="false" tabindex="0" onclick="selectOption(this)">
+              <span class="opt-key">B)</span>
+              <span>Đi chơi với bạn bè, tham gia hoạt động xã hội</span>
+            </button>
+            <button class="option selected" role="radio" aria-checked="true" tabindex="0" onclick="selectOption(this)">
+              <span class="opt-key">C)</span>
+              <span>Làm việc sáng tạo, vẽ, viết</span>
+            </button>
+            <button class="option" role="radio" aria-checked="false" tabindex="0" onclick="selectOption(this)">
+              <span class="opt-key">D)</span>
+              <span>Tập thể dục, đi dạo công viên</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions">
+          <button class="secondary" onclick="alert('Bỏ qua câu hỏi')">Bỏ qua</button>
+        </div>
+      </div>
+    </main>
+
+    <!-- RESULT PAGE -->
+    <main class="page-content" id="result-page" role="main">
+      <div class="container">
+        <div class="intro">
+          <h1>Kết quả</h1>
+        </div>
+
+        <!-- Analysis Card -->
+        <div class="card">
+          <h2 style="margin: 0 0 16px 0; font-size: var(--text-2xl);">Phân tích tính cách của bạn</h2>
+          
+          <div class="analysis-grid">
+            <div class="analysis-card">
+              <div class="analysis-label">Bên trong (Tư duy/Cảm xúc)</div>
+              <div class="analysis-text">
+                Bạn là người có tư duy sáng tạo và giàu trí tưởng tượng. Bạn thích suy nghĩ sâu sắc về các vấn đề và có khả năng nhìn nhận mọi thứ từ nhiều góc độ khác nhau.
+              </div>
+            </div>
+            
+            <div class="analysis-card">
+              <div class="analysis-label">Bên ngoài (Hành vi)</div>
+              <div class="analysis-text">
+                Bạn thể hiện sự sáng tạo qua các hoạt động thực tế như vẽ, viết, hoặc làm các dự án thủ công. Bạn thích tự do thể hiện bản thân và không ngại thử nghiệm những điều mới.
+              </div>
+            </div>
+            
+            <div class="analysis-card">
+              <div class="analysis-label">Giả thuyết tổng thể</div>
+              <div class="analysis-text">
+                Bạn là người có tính cách nghệ sĩ, luôn tìm kiếm cách thể hiện bản thân thông qua sáng tạo. Bạn cân bằng giữa thời gian một mình để suy nghĩ và thời gian làm việc thực tế.
+              </div>
+            </div>
+          </div>
+
+          <p class="analysis-disclaimer">
+            * Kết quả này chỉ mang tính chất tham khảo và giải trí. Không thay thế cho tư vấn chuyên môn.
+          </p>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions">
+          <button class="primary" onclick="alert('Chia sẻ kết quả!')">Chia sẻ kết quả</button>
+          <a href="#game" class="link">Làm lại</a>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <script>
+    // Page Navigation
+    function showPage(pageId) {
+      // Hide all pages
+      document.querySelectorAll('.page-content').forEach(page => {
+        page.classList.remove('active');
+      });
+      
+      // Remove active from all tabs
+      document.querySelectorAll('.page-tab').forEach(tab => {
+        tab.classList.remove('active');
+        tab.setAttribute('aria-selected', 'false');
+      });
+      
+      // Show selected page
+      const pageMap = {
+        'game': 'main-content',
+        'result': 'result-page'
+      };
+      
+      const targetPage = document.getElementById(pageMap[pageId]);
+      if (targetPage) {
+        targetPage.classList.add('active');
+      }
+      
+      // Activate tab
+      event.target.classList.add('active');
+      event.target.setAttribute('aria-selected', 'true');
+    }
+
+    // Option Selection
+    function selectOption(element) {
+      // Remove selected from all options
+      document.querySelectorAll('.option').forEach(opt => {
+        opt.classList.remove('selected');
+        opt.setAttribute('aria-checked', 'false');
+      });
+      
+      // Add selected to clicked option
+      element.classList.add('selected');
+      element.setAttribute('aria-checked', 'true');
+      
+      // Add ripple effect
+      const ripple = document.createElement('span');
+      ripple.style.position = 'absolute';
+      ripple.style.borderRadius = '50%';
+      ripple.style.background = 'rgba(34, 197, 94, 0.3)';
+      ripple.style.transform = 'scale(0)';
+      ripple.style.animation = 'ripple 0.6s ease-out';
+      ripple.style.left = '50%';
+      ripple.style.top = '50%';
+      ripple.style.width = '20px';
+      ripple.style.height = '20px';
+      ripple.style.marginLeft = '-10px';
+      ripple.style.marginTop = '-10px';
+      
+      element.appendChild(ripple);
+      
+      setTimeout(() => {
+        ripple.remove();
+      }, 600);
+    }
+
+    // Keyboard Navigation for Options
+    document.addEventListener('keydown', function(e) {
+      const options = document.querySelectorAll('.option');
+      const currentIndex = Array.from(options).findIndex(opt => 
+        opt === document.activeElement || opt.contains(document.activeElement)
+      );
+      
+      if (e.key === 'ArrowDown' && currentIndex < options.length - 1) {
+        e.preventDefault();
+        options[currentIndex + 1].focus();
+      } else if (e.key === 'ArrowUp' && currentIndex > 0) {
+        e.preventDefault();
+        options[currentIndex - 1].focus();
+      } else if (e.key === 'Enter' || e.key === ' ') {
+        if (document.activeElement.classList.contains('option')) {
+          e.preventDefault();
+          selectOption(document.activeElement);
+        }
+      }
+    });
+
+    // Add ripple animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes ripple {
+        to {
+          transform: scale(4);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Progress Bar Animation on Load
+    window.addEventListener('load', function() {
+      const progressThumb = document.querySelector('.progress-thumb');
+      if (progressThumb) {
+        progressThumb.style.transition = 'width 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+      }
+    });
+  </script>
+</body>
+</html>
