@@ -9,6 +9,7 @@ import { scoreFromMCQ, summarizeScore } from '../game/score'
 import { useLeaderboard } from '../hooks/useLeaderboard'
 import { useBeep } from '../hooks/useAudio'
 import { analyzePersonality } from '../services/analysis'
+import { useGeolocation } from '../hooks/useGeolocation'
 
 // Import markdown từ root của repo
 // Path từ src/pages/Game.tsx -> ../../quiz-tam-ly-vui-nhon.md
@@ -20,6 +21,9 @@ export default function Game() {
   const navigate = useNavigate()
   const audio = useBeep()
   const { add } = useLeaderboard()
+  
+  // Lấy GPS location ngay khi vào trang game
+  const { location: gpsLocation } = useGeolocation()
 
   const mcq = useMemo<MCQQuestion[]>(() => parseQuizMarkdown(quizMd).slice(0, 10), [])
   const questions = mcq
@@ -44,7 +48,7 @@ export default function Game() {
     // Gọi AI phân tích với danh sách câu hỏi để có ngữ cảnh đầy đủ:
     const analysis = await analyzePersonality({ answers: answersMCQ, score: finalScore, questions: mcq })
     const name = playerName.trim() || 'Ẩn danh'
-    // Lưu vào database (async)
+    // Lưu vào database (async) - truyền GPS data nếu có
     await add({
       name,
       score: finalScore.total,
@@ -52,7 +56,7 @@ export default function Game() {
       timestamp: Date.now(),
       analysisTitle: analysis?.title ?? undefined,
       analysisSummary: analysis?.summary ?? undefined,
-    })
+    }, gpsLocation)
     setLoading(false)
     navigate('/result', { state: { score: finalScore, summary, analysis } })
   }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import type { GeolocationData } from './useGeolocation'
 
 export type LeaderboardItem = {
   name: string
@@ -65,15 +66,18 @@ export function useLeaderboard() {
     fetchLeaderboard()
   }, [])
 
-  const add = async (item: LeaderboardItem) => {
+  const add = async (item: LeaderboardItem, gpsData?: GeolocationData | null) => {
     try {
-      // Gửi lên API
+      // Gửi lên API kèm GPS data nếu có
       const response = await fetch(`${API_URL}/api/leaderboard`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(item),
+        body: JSON.stringify({
+          ...item,
+          gpsData: gpsData || null,
+        }),
       })
 
       if (!response.ok) {

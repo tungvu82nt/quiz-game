@@ -5,6 +5,7 @@
     "lib": ["ES2022"],
     "moduleResolution": "bundler",
     "types": ["node"],
+    "typeRoots": ["./node_modules/@types", "./server/types"],
     "skipLibCheck": true,
     "strict": true,
     "esModuleInterop": true,
@@ -12,6 +13,7 @@
     "resolveJsonModule": true,
     "noEmit": true
   },
-  "include": ["server/**/*"]
+  "include": ["server/**/*"],
+  "exclude": ["src", "node_modules"]
 }
 
