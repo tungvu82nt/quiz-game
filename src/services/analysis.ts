@@ -30,6 +30,10 @@ export async function analyzePersonality(payload: AnalyzePayload): Promise<Analy
       const promptStyle = (import.meta.env.VITE_PROMPT_STYLE as string | undefined) ?? 'default'
       return buildMockAnalysis(payload, promptStyle)
     }
+    // Kiểm tra baseUrl trước khi sử dụng
+    if (!baseUrl) {
+      throw new Error('VITE_ANALYSIS_API_URL is required when not using mock')
+    }
     // Ghép URL an toàn, không làm rơi "/v1" khi apiPath có leading slash
     apiPath = apiPath.replace(/^\/+/, '')
     const fullUrl = baseUrl.replace(/\/+$/, '') + '/' + apiPath
