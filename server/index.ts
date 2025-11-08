@@ -8,7 +8,25 @@ const app = express()
 const PORT = process.env.PORT || 3001
 
 // Middleware
-app.use(cors())
+// CORS: Cho phép tất cả origins (có thể tùy chỉnh cho production)
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',')
+  : ['http://localhost:5173', 'http://localhost:5174', 'https://leafy-sunflower-6cf24d.netlify.app']
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Cho phép requests không có origin (mobile apps, Postman, etc.)
+      if (!origin) return callback(null, true)
+      if (allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
+        callback(null, true)
+      } else {
+        callback(new Error('Not allowed by CORS'))
+      }
+    },
+    credentials: true,
+  })
+)
 app.use(express.json())
 // Sử dụng IP tracking middleware cho tất cả requests
 app.use(ipTrackingMiddleware)

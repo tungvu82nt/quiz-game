@@ -9,6 +9,18 @@
   NODE_VERSION = "18"
   # Disable auto-install extensions
   NETLIFY_PLUGINS_AUTO_INSTALL = "false"
+  
+  # NOTE: Environment variables should be set in Netlify Dashboard:
+  # - VITE_API_URL: Backend API URL (e.g., https://your-backend.railway.app)
+  # - VITE_ANALYSIS_API_URL: MiniMax API URL
+  # - VITE_ANALYSIS_API_KEY: MiniMax API Key
+  # - VITE_ANALYSIS_API_PATH: MiniMax API Path
+  # - VITE_ANALYSIS_MODEL: MiniMax Model
+  # - VITE_PROMPT_STYLE: Prompt style
+  # - VITE_ANALYSIS_USE_MOCK: Use mock analysis (1 or 0)
+  #
+  # DATABASE_URL is NOT needed in Netlify (only for backend server)
+  # See NETLIFY_SETUP.md for detailed instructions
 
 # Redirects cho SPA routing
 [[redirects]]
