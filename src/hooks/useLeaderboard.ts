@@ -20,7 +20,10 @@ function readBoardLocal(): LeaderboardItem[] {
     if (!raw) return []
     const arr = JSON.parse(raw)
     if (Array.isArray(arr)) return arr
-  } catch {}
+  } catch (error) {
+    // Ignore localStorage errors
+    console.warn('Failed to read from localStorage:', error)
+  }
   return []
 }
 
@@ -28,7 +31,10 @@ function readBoardLocal(): LeaderboardItem[] {
 function saveBoardLocal(board: LeaderboardItem[]) {
   try {
     localStorage.setItem(KEY, JSON.stringify(board.slice(0, 50)))
-  } catch {}
+  } catch (error) {
+    // Ignore localStorage errors (quota exceeded, etc.)
+    console.warn('Failed to save to localStorage:', error)
+  }
 }
 
 export function useLeaderboard() {
@@ -43,21 +49,59 @@ export function useLeaderboard() {
         setLoading(true)
         setError(null)
         const response = await fetch(`${API_URL}/api/leaderboard`)
-        
+
+        // Log status and content type for debugging
+        console.log('Response Status:', response.status)
+        console.log('Content-Type:', response.headers.get('Content-Type'))
+        console.log('API URL:', `${API_URL}/api/leaderboard`)
+
+        // Check if the response is OK first
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
+          // Attempt to read as text for better error message if it's not OK
+          const errorText = await response.text()
+          console.error('Non-OK response:', {
+            status: response.status,
+            statusText: response.statusText,
+            contentType: response.headers.get('Content-Type'),
+            preview: errorText.substring(0, 200),
+          })
+          throw new Error(
+            `HTTP error! Status: ${response.status} ${response.statusText}. Details: ${errorText.substring(0, 100)}...`
+          )
         }
-        
+
+        // Check if the response is actually JSON
+        const contentType = response.headers.get('Content-Type')
+        if (!contentType || !contentType.includes('application/json')) {
+          // If not JSON, read as text to see what we actually got
+          const responseText = await response.text()
+          console.error('Expected JSON but received non-JSON response:', {
+            status: response.status,
+            contentType: contentType || 'no Content-Type',
+            url: `${API_URL}/api/leaderboard`,
+            preview: responseText.substring(0, 200),
+          })
+          throw new Error(
+            `Expected JSON but received ${contentType || 'no Content-Type'}. Response: ${responseText.substring(0, 100)}...`
+          )
+        }
+
+        // Safe to parse as JSON now
         const data: LeaderboardItem[] = await response.json()
         setBoard(data)
         // Lưu vào localStorage làm backup
         saveBoardLocal(data)
+        console.log('Successfully fetched leaderboard:', data.length, 'items')
       } catch (err) {
         console.error('Failed to fetch leaderboard from API:', err)
         // Fallback: đọc từ localStorage
         const localData = readBoardLocal()
         setBoard(localData)
-        setError('Không thể kết nối đến server. Đang hiển thị dữ liệu local.')
+        const errorMessage =
+          err instanceof Error
+            ? err.message
+            : 'Không thể kết nối đến server. Đang hiển thị dữ liệu local.'
+        setError(errorMessage)
       } finally {
         setLoading(false)
       }
@@ -80,19 +124,65 @@ export function useLeaderboard() {
         }),
       })
 
+      // Log status and content type for debugging
+      console.log('POST Response Status:', response.status)
+      console.log('POST Content-Type:', response.headers.get('Content-Type'))
+
+      // Check if the response is OK first
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+        // Attempt to read as text for better error message
+        const errorText = await response.text()
+        console.error('Non-OK response on POST:', {
+          status: response.status,
+          statusText: response.statusText,
+          contentType: response.headers.get('Content-Type'),
+          preview: errorText.substring(0, 200),
+        })
+        throw new Error(
+          `HTTP error! Status: ${response.status} ${response.statusText}. Details: ${errorText.substring(0, 100)}...`
+        )
       }
+
+      // Check if the response is actually JSON
+      const contentType = response.headers.get('Content-Type')
+      if (!contentType || !contentType.includes('application/json')) {
+        // If not JSON, read as text to see what we actually got
+        const responseText = await response.text()
+        console.error('Expected JSON but received non-JSON response on POST:', {
+          status: response.status,
+          contentType: contentType || 'no Content-Type',
+          preview: responseText.substring(0, 200),
+        })
+        throw new Error(
+          `Expected JSON but received ${contentType || 'no Content-Type'}. Response: ${responseText.substring(0, 100)}...`
+        )
+      }
+
+      // Parse the created item from response
+      const createdItem: LeaderboardItem = await response.json()
+      console.log('Successfully added to leaderboard:', createdItem)
 
       // Reload leaderboard sau khi thêm thành công
       const updatedResponse = await fetch(`${API_URL}/api/leaderboard`)
       if (updatedResponse.ok) {
-        const data: LeaderboardItem[] = await updatedResponse.json()
-        setBoard(data)
-        saveBoardLocal(data)
+        const updatedContentType = updatedResponse.headers.get('Content-Type')
+        if (updatedContentType && updatedContentType.includes('application/json')) {
+          const data: LeaderboardItem[] = await updatedResponse.json()
+          setBoard(data)
+          saveBoardLocal(data)
+          console.log('Successfully reloaded leaderboard:', data.length, 'items')
+        } else {
+          // If reload returns non-JSON, use the created item and current board
+          console.warn('Reload returned non-JSON, using created item')
+          const next = [...board, createdItem]
+          next.sort((a, b) => b.score - a.score)
+          setBoard(next.slice(0, 50))
+          saveBoardLocal(next)
+        }
       } else {
         // Nếu reload thất bại, thêm vào local state
-        const next = [...board, item]
+        console.warn('Reload failed, adding to local state')
+        const next = [...board, createdItem]
         next.sort((a, b) => b.score - a.score)
         setBoard(next.slice(0, 50))
         saveBoardLocal(next)
@@ -104,7 +194,9 @@ export function useLeaderboard() {
       next.sort((a, b) => b.score - a.score)
       setBoard(next.slice(0, 50))
       saveBoardLocal(next)
-      setError('Không thể lưu lên server. Đã lưu vào bộ nhớ local.')
+      const errorMessage =
+        err instanceof Error ? err.message : 'Không thể lưu lên server. Đã lưu vào bộ nhớ local.'
+      setError(errorMessage)
     }
   }
 
